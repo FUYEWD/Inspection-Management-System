@@ -356,38 +356,8 @@ MIT License - 見 LICENSE 檔案
 
 ---
 
-## 👨‍💼 專案負責人
 
-**Your Name**
-
-- GitHub: [@yourusername](https://github.com/yourusername)
-- Email: your.email@example.com
-- LinkedIn: [Your Profile](https://linkedin.com/in/yourprofile)
-
----
-
-## ⭐ 致謝
-
-感謝以下技術社群與開源專案的支持：
-
-- ASP.NET Core 團隊
-- Entity Framework Core
-- Bootstrap 框架
-- 台灣開發者社群
-
----
-
-## 📞 聯繫與支援
-
-有任何問題或建議？
-
-- 📧 Email: your.email@example.com
-- 💬 GitHub Issues: [提交 Issue](https://github.com/yourusername/inspection-management-system/issues)
-- 📖 Wiki: [專案 Wiki](https://github.com/yourusername/inspection-management-system/wiki)
-
----
-
-**最後更新** - 2024 年 12 月
+**最後更新** - 2025 年 12 月
 
 ---
 
