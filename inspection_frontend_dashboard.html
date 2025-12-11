@@ -1,0 +1,629 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>公共設施巡檢管理系統</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <style>
+        body {
+            background-color: #f5f5f5;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        .navbar-custom {
+            background: linear-gradient(135deg, #0066cc 0%, #0052a3 100%);
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        
+        .sidebar {
+            background: white;
+            border-right: 1px solid #ddd;
+            min-height: 100vh;
+            padding-top: 20px;
+            position: fixed;
+            width: 250px;
+            left: 0;
+            top: 60px;
+        }
+        
+        .nav-link {
+            color: #333;
+            padding: 10px 20px;
+            border-left: 3px solid transparent;
+            transition: all 0.3s;
+        }
+        
+        .nav-link:hover {
+            background-color: #f0f0f0;
+            border-left-color: #0066cc;
+            color: #0066cc;
+        }
+        
+        .nav-link.active {
+            background-color: #e7f1ff;
+            border-left-color: #0066cc;
+            color: #0066cc;
+            font-weight: bold;
+        }
+        
+        .main-content {
+            margin-left: 250px;
+            padding: 30px;
+            margin-top: 60px;
+        }
+        
+        .card {
+            border: none;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            margin-bottom: 20px;
+            transition: transform 0.3s;
+        }
+        
+        .card:hover {
+            transform: translateY(-2px);
+        }
+        
+        .stat-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-radius: 8px;
+            padding: 20px;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        
+        .stat-card.danger {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+        }
+        
+        .stat-card.success {
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+        }
+        
+        .stat-card.warning {
+            background: linear-gradient(135deg, #fa709a 0%, #fee140 100%);
+        }
+        
+        .stat-value {
+            font-size: 2.5rem;
+            font-weight: bold;
+            margin: 10px 0;
+        }
+        
+        .stat-label {
+            font-size: 0.9rem;
+            opacity: 0.9;
+        }
+        
+        .table-hover tbody tr:hover {
+            background-color: #f8f9fa;
+        }
+        
+        .badge-overdue {
+            background-color: #dc3545;
+        }
+        
+        .badge-pending {
+            background-color: #ffc107;
+        }
+        
+        .badge-completed {
+            background-color: #28a745;
+        }
+        
+        .btn-icon {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+        }
+        
+        .search-box {
+            position: relative;
+        }
+        
+        .search-box input {
+            padding-right: 35px;
+        }
+        
+        .search-box i {
+            position: absolute;
+            right: 10px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #999;
+        }
+        
+        @media (max-width: 768px) {
+            .sidebar {
+                display: none;
+            }
+            
+            .main-content {
+                margin-left: 0;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- 頂部導航欄 -->
+    <nav class="navbar navbar-expand-lg navbar-dark navbar-custom fixed-top">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="#">
+                <i class="fas fa-clipboard-check"></i> 公共設施巡檢管理系統
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="#"><i class="fas fa-bell"></i> 通知</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#"><i class="fas fa-user-circle"></i> 帳號</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#"><i class="fas fa-sign-out-alt"></i> 登出</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- 側邊欄 -->
+    <div class="sidebar">
+        <div class="nav flex-column">
+            <a class="nav-link active" href="#dashboard" data-page="dashboard">
+                <i class="fas fa-home"></i> 儀表板
+            </a>
+            <a class="nav-link" href="#inspections" data-page="inspections">
+                <i class="fas fa-tasks"></i> 巡檢任務
+            </a>
+            <a class="nav-link" href="#reports" data-page="reports">
+                <i class="fas fa-exclamation-triangle"></i> 異常回報
+            </a>
+            <a class="nav-link" href="#analytics" data-page="analytics">
+                <i class="fas fa-chart-bar"></i> 資料分析
+            </a>
+            <a class="nav-link" href="#settings" data-page="settings">
+                <i class="fas fa-cog"></i> 系統設定
+            </a>
+        </div>
+    </div>
+
+    <!-- 主要內容 -->
+    <div class="main-content">
+        <!-- Dashboard 頁面 -->
+        <div id="dashboard-page" class="page-content">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h1>儀表板</h1>
+                <div class="btn-group">
+                    <button class="btn btn-primary btn-sm">
+                        <i class="fas fa-plus"></i> 新增任務
+                    </button>
+                    <button class="btn btn-success btn-sm">
+                        <i class="fas fa-download"></i> 匯出報表
+                    </button>
+                </div>
+            </div>
+
+            <!-- 統計卡片 -->
+            <div class="row mb-4">
+                <div class="col-md-3">
+                    <div class="stat-card success">
+                        <div class="stat-label">今日完成率</div>
+                        <div class="stat-value" id="completion-rate">--</div>
+                        <small>完成 <span id="completed-count">0</span> / <span id="total-count">0</span> 項任務</small>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="stat-card">
+                        <div class="stat-label">異常總數</div>
+                        <div class="stat-value" id="total-reports">--</div>
+                        <small>待處理 <span id="pending-reports">0</span> 項</small>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="stat-card danger">
+                        <div class="stat-label">緊急異常</div>
+                        <div class="stat-value" id="critical-reports">--</div>
+                        <small>需立即處理</small>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="stat-card warning">
+                        <div class="stat-label">超期任務</div>
+                        <div class="stat-value" id="overdue-count">--</div>
+                        <small>需立即跟進</small>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 最近任務表 -->
+            <div class="card">
+                <div class="card-header bg-light">
+                    <h5 class="mb-0">
+                        <i class="fas fa-list"></i> 最近巡檢任務
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th>任務編號</th>
+                                    <th>地點</th>
+                                    <th>負責人</th>
+                                    <th>截止日期</th>
+                                    <th>狀態</th>
+                                    <th>操作</th>
+                                </tr>
+                            </thead>
+                            <tbody id="recent-tasks">
+                                <tr>
+                                    <td colspan="6" class="text-center text-muted py-4">
+                                        <i class="fas fa-spinner fa-spin"></i> 載入中...
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 最近異常回報 -->
+            <div class="card">
+                <div class="card-header bg-light">
+                    <h5 class="mb-0">
+                        <i class="fas fa-exclamation-triangle"></i> 最近異常回報
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th>回報編號</th>
+                                    <th>故障類型</th>
+                                    <th>嚴重程度</th>
+                                    <th>回報人</th>
+                                    <th>狀態</th>
+                                    <th>回報時間</th>
+                                </tr>
+                            </thead>
+                            <tbody id="recent-reports">
+                                <tr>
+                                    <td colspan="6" class="text-center text-muted py-4">
+                                        <i class="fas fa-spinner fa-spin"></i> 載入中...
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Inspections 頁面 -->
+        <div id="inspections-page" class="page-content" style="display:none;">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h1>巡檢任務管理</h1>
+                <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#createTaskModal">
+                    <i class="fas fa-plus"></i> 新增任務
+                </button>
+            </div>
+
+            <!-- 篩選 -->
+            <div class="card mb-4">
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-4">
+                            <label class="form-label">搜尋任務編號或地點</label>
+                            <div class="search-box">
+                                <input type="text" class="form-control" placeholder="輸入關鍵字...">
+                                <i class="fas fa-search"></i>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label">狀態</label>
+                            <select class="form-select" id="status-filter">
+                                <option value="">全部狀態</option>
+                                <option value="NotStarted">未開始</option>
+                                <option value="InProgress">進行中</option>
+                                <option value="Completed">已完成</option>
+                                <option value="Overdue">超期</option>
+                            </select>
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label">優先級</label>
+                            <select class="form-select">
+                                <option value="">全部優先級</option>
+                                <option value="Low">低</option>
+                                <option value="Medium">中</option>
+                                <option value="High">高</option>
+                                <option value="Critical">緊急</option>
+                            </select>
+                        </div>
+                        <div class="col-md-2 d-flex align-items-end">
+                            <button class="btn btn-outline-primary w-100">
+                                <i class="fas fa-search"></i> 搜尋
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 任務列表 -->
+            <div class="card">
+                <div class="table-responsive">
+                    <table class="table table-hover mb-0">
+                        <thead class="table-light">
+                            <tr>
+                                <th>任務編號</th>
+                                <th>地點</th>
+                                <th>負責人</th>
+                                <th>截止日期</th>
+                                <th>狀態</th>
+                                <th>優先級</th>
+                                <th>操作</th>
+                            </tr>
+                        </thead>
+                        <tbody id="inspections-table">
+                            <tr>
+                                <td colspan="7" class="text-center text-muted py-4">
+                                    <i class="fas fa-spinner fa-spin"></i> 載入中...
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- Reports 頁面 -->
+        <div id="reports-page" class="page-content" style="display:none;">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h1>異常回報管理</h1>
+                <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#createReportModal">
+                    <i class="fas fa-plus"></i> 新增回報
+                </button>
+            </div>
+
+            <!-- 回報列表 -->
+            <div class="card">
+                <div class="table-responsive">
+                    <table class="table table-hover mb-0">
+                        <thead class="table-light">
+                            <tr>
+                                <th>回報編號</th>
+                                <th>故障類型</th>
+                                <th>嚴重程度</th>
+                                <th>回報人</th>
+                                <th>狀態</th>
+                                <th>回報時間</th>
+                                <th>操作</th>
+                            </tr>
+                        </thead>
+                        <tbody id="reports-table">
+                            <tr>
+                                <td colspan="7" class="text-center text-muted py-4">
+                                    <i class="fas fa-spinner fa-spin"></i> 載入中...
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- Analytics 頁面 -->
+        <div id="analytics-page" class="page-content" style="display:none;">
+            <div class="mb-4">
+                <h1>資料分析</h1>
+            </div>
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="card">
+                        <div class="card-header">
+                            <h5>異常類型分佈</h5>
+                        </div>
+                        <div class="card-body">
+                            <canvas id="issueChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="card">
+                        <div class="card-header">
+                            <h5>嚴重程度統計</h5>
+                        </div>
+                        <div class="card-body">
+                            <canvas id="severityChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 新增任務 Modal -->
+    <div class="modal fade" id="createTaskModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">新增巡檢任務</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="createTaskForm">
+                        <div class="mb-3">
+                            <label class="form-label">地點</label>
+                            <input type="text" class="form-control" name="location" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">負責人</label>
+                            <select class="form-select" name="assignedTo" required>
+                                <option value="">請選擇</option>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">截止日期</label>
+                            <input type="datetime-local" class="form-control" name="dueDate" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">優先級</label>
+                            <select class="form-select" name="priority">
+                                <option value="Low">低</option>
+                                <option value="Medium" selected>中</option>
+                                <option value="High">高</option>
+                                <option value="Critical">緊急</option>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">說明</label>
+                            <textarea class="form-control" name="description" rows="3"></textarea>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">取消</button>
+                    <button type="button" class="btn btn-primary" onclick="submitCreateTask()">建立任務</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.0/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
+
+    <script>
+        // 頁面切換
+        $(document).ready(function() {
+            $('.nav-link').click(function(e) {
+                e.preventDefault();
+                const page = $(this).data('page');
+                
+                // 移除所有 active class
+                $('.nav-link').removeClass('active');
+                $(this).addClass('active');
+                
+                // 隱藏所有頁面
+                $('.page-content').hide();
+                
+                // 顯示選中的頁面
+                $('#' + page + '-page').show();
+                
+                // 載入資料
+                loadPageData(page);
+            });
+            
+            // 初始化
+            loadPageData('dashboard');
+        });
+
+        // 載入資料
+        function loadPageData(page) {
+            if (page === 'dashboard') {
+                loadDashboardData();
+            } else if (page === 'inspections') {
+                loadInspectionsData();
+            } else if (page === 'reports') {
+                loadReportsData();
+            }
+        }
+
+        // 載入儀表板資料
+        function loadDashboardData() {
+            // 模擬 API 呼叫
+            $.ajax({
+                url: '/api/dashboard/summary',
+                method: 'GET',
+                success: function(data) {
+                    $('#completion-rate').text(data.completionRate + '%');
+                    $('#completed-count').text(data.completedTaskCount);
+                    $('#total-count').text(data.todayTaskCount);
+                    $('#total-reports').text(data.totalReports);
+                    $('#critical-reports').text(data.criticalReportsCount);
+                    $('#overdue-count').text(data.overdueTaskCount);
+                }
+            });
+        }
+
+        // 載入巡檢任務資料
+        function loadInspectionsData() {
+            // 模擬資料
+            const mockData = [
+                { id: 1, code: 'TASK-001', location: '台北市南港區', assignee: '李明', dueDate: '2024-12-15', status: 'InProgress', priority: 'High' },
+                { id: 2, code: 'TASK-002', location: '台北市信義區', assignee: '王美', dueDate: '2024-12-16', status: 'NotStarted', priority: 'Medium' },
+                { id: 3, code: 'TASK-003', location: '台北市大安區', assignee: '張三', dueDate: '2024-12-10', status: 'Overdue', priority: 'Critical' }
+            ];
+            
+            let html = '';
+            mockData.forEach(task => {
+                const statusClass = task.status === 'Completed' ? 'badge-completed' : 
+                                   task.status === 'Overdue' ? 'badge-overdue' : 'badge-pending';
+                const statusText = task.status === 'Completed' ? '已完成' : 
+                                  task.status === 'InProgress' ? '進行中' : 
+                                  task.status === 'Overdue' ? '超期' : '未開始';
+                
+                html += `
+                    <tr>
+                        <td><strong>${task.code}</strong></td>
+                        <td>${task.location}</td>
+                        <td>${task.assignee}</td>
+                        <td>${task.dueDate}</td>
+                        <td><span class="badge ${statusClass}">${statusText}</span></td>
+                        <td><span class="badge bg-info">${task.priority}</span></td>
+                        <td>
+                            <button class="btn btn-sm btn-outline-primary">查看</button>
+                            <button class="btn btn-sm btn-outline-danger">編輯</button>
+                        </td>
+                    </tr>
+                `;
+            });
+            
+            $('#inspections-table').html(html);
+        }
+
+        // 載入異常回報資料
+        function loadReportsData() {
+            const mockData = [
+                { id: 1, code: 'RPT-001', type: '水壓異常', severity: 'Critical', reporter: '李明', status: 'Pending', time: '2024-12-11 10:30' },
+                { id: 2, code: 'RPT-002', type: '漏水', severity: 'High', reporter: '王美', status: 'InProgress', time: '2024-12-11 09:15' }
+            ];
+            
+            let html = '';
+            mockData.forEach(report => {
+                const severityClass = report.severity === 'Critical' ? 'danger' : 'warning';
+                const statusText = report.status === 'Pending' ? '待處理' : '處理中';
+                
+                html += `
+                    <tr>
+                        <td><strong>${report.code}</strong></td>
+                        <td>${report.type}</td>
+                        <td><span class="badge bg-${severityClass}">${report.severity}</span></td>
+                        <td>${report.reporter}</td>
+                        <td><span class="badge bg-warning">${statusText}</span></td>
+                        <td>${report.time}</td>
+                        <td>
+                            <button class="btn btn-sm btn-outline-primary">查看</button>
+                        </td>
+                    </tr>
+                `;
+            });
+            
+            $('#reports-table').html(html);
+        }
+
+        function submitCreateTask() {
+            alert('任務已建立！');
+            bootstrap.Modal.getInstance(document.getElementById('createTaskModal')).hide();
+        }
+    </script>
+</body>
+</html>
