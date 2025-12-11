@@ -2,6 +2,7 @@
 ## Government Inspection Management System
 
 符合政府資安規範、個資法及採購法之完整巡檢與異常回報平台
+dashboard.yay.boo
 
 [![Status](https://img.shields.io/badge/status-production-green)]() [![Compliance](https://img.shields.io/badge/compliance-gov_certified-blue)]() [![Security](https://img.shields.io/badge/security-A%2B-brightgreen)]()
 
